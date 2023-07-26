@@ -1,7 +1,7 @@
 #!/bin/bash
 # Truenas Scale does not detect a new IP, at least not fast enough for my liking.
 # This script runs every X minutes as a CRON job.
-# Description: DHCP renew, Command: sh /home/admin/dhcp_renew.sh, Run as user: root, Schedule: 0/5 * * * *
+# Description: DHCP renew, Command: sh /home/admin/dhcp_renew.sh, Run as user: root, Schedule: 0-59/5 * * * *
 # If GW is reachable it exits, if not it request a new IP and makes two beeps.
 # If it fails, it makes one beep, waits 10s and retries.
 # Make sure to cmhod a+x
@@ -11,12 +11,13 @@
 
 # Function to check if the gateway is reachable
 check_gateway() {
-  # gwip=$(ip r | awk '/^def/{print $3}')
+    gwip=$(ip r | awk '/^def/{print $3}')
   # Debug IP (my cellphone)
-    gwip=192.168.0.208
+  #  gwip=192.168.0.208
     ping -c 1 $gwip > /dev/null 2>&1
     return $?
 }
+
 
 # Function to request a new IP
 request_new_ip() {
@@ -28,7 +29,11 @@ request_new_ip() {
 while true; do
     if check_gateway; then
         echo "Gateway is reachable. No action needed."
-        # echo -en "\a" > /dev/tty5
+        #echo -en "\a" > /dev/tty5
+        #sleep 1
+        #echo -en "\a" > /dev/tty5
+        #sleep 1
+        #echo -en "\a" > /dev/tty5
         # We exit here!
         break
     else
@@ -37,7 +42,7 @@ while true; do
         if check_gateway; then
             echo "New IP requested successfully."
             echo -en "\a" > /dev/tty5
-            sleep 3
+            sleep 1
             echo -en "\a" > /dev/tty5
         else
             echo "Failed to request a new IP. Retrying in 10 seconds..."
